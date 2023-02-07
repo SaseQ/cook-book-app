@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="pl">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <title>Cook Book</title>
+</head>
+<body style="background-color: #212529">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" th:href="@{/cookbook}">Cook Book</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/cookbook}">Strona główna<span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/cookbook/api-info}">Api</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" th:action="@{/cookbook}" th:method="get">
+            <input class="form-control mr-sm-2" type="search" placeholder="Nazwa przepisu" aria-label="Search" th:name="name">
+            <button class="btn btn-outline-success my-2 my-sm-0 mr-sm-4" type="submit">Szukaj</button>
+        </form>
+        <button class="btn btn-success my-2 mr-sm-4" data-toggle="modal" data-target="#addModalid">Dodaj przepis</button>
+        <a th:href="@{/logout}" class="btn btn-danger my-2 my-sm-0">Wyloguj</a>
+    </div>
+</nav>
+
+<!-- Add Modal -->
+<div class="modal fade" id="addModalid" tabindex="-1" role="dialog" aria-labelledby="addModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModal">Dodawanie przepisu</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!-- Add Form -->
+                <form th:action="@{/add}" th:object="${newRecipie}" method="post">
+                    <div class="form-group">
+                        <label for="nameInput">Nazwa Przepisu</label>
+                        <input class="form-control" id="nameInput" placeholder="Wpisz nazwę" th:field="*{name}">
+                    </div>
+                    <div class="form-group">
+                        <label for="componentTextarea">Składniki:</label>
+                        <textarea class="form-control" id="componentTextarea" aria-describedby="componentHelp" rows="4" placeholder="Pierszy składnik 200g, drugi składnik 1kg..." th:field="*{components}"></textarea>
+                        <small id="componentHelp" class="form-text text-muted">Pomiętaj aby składniki oddzielić przecinkiem!</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="prepareTextarea">Sposób przygotowania:</label>
+                        <textarea class="form-control" id="prepareTextarea" rows="4" placeholder="Opisz sposób przygotowania" th:field="*{prepare}"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">Dodaj przepis</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Table -->
+<table class="table table-dark">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Nazwa Przepisu</th>
+        <th scope="col">Data dodania</th>
+        <th scope="col">Otwórz</th>
+    </tr>
+    </thead>
+    <tbody>
+        <div th:each="recipe: ${recipes}">
+            <tr>
+                <th scope="row" th:text="${recipe.getId()}"></th>
+                <td th:text="${recipe.getName()}"></td>
+                <td th:text="${recipe.getAddDate()}"></td>
+                <td><button type="button" class="btn btn-success" data-toggle="modal" th:data-target="${'#' + recipe.getId()}">Otwórz</button></td>
+            </tr>
+
+            <!-- Product Modal-->
+            <div class="modal fade" th:id="${recipe.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel" th:text="${recipe.getName()}"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p th:text="${'Dodano: ' + recipe.getAddDate()}"></p>
+                            <ul class="list-group">
+                                <li class="list-group-item active">Lista składników:</li>
+                                <div th:each="component: ${recipe.getComponents()}">
+                                    <li class="list-group-item" th:text="${component.getNameAndGrammage()}"></li>
+                                </div>
+                            </ul>
+                            <br><br>
+                            <ul class="list-group">
+                                <li class="list-group-item active">Sposób przygotowania:</li>
+                                <li class="list-group-item" th:text="${recipe.getPrepare()}"></li>
+                            </ul>
+                            <br>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-success" data-toggle="modal" th:data-target="${'#' + 'edit' + recipe.getId()}">Edytuj</button>
+                            <button type="button" class="btn btn-danger" data-toggle="modal" th:data-target="${'#' + 'usun' + recipe.getId()}">Usuń</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Modal -->
+            <div class="modal fade" th:id="${'edit' + recipe.getId()}" tabindex="-1" role="dialog" aria-labelledby="editModal" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editModal" th:text="${'Edytowanie przepisu: ' + recipe.getName()}"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Edit Form-->
+                            <form th:action="@{/edit/{id}(id=${recipe.getId()})}" th:object="${newRecipie}" method="post">
+                                <div class="form-group">
+                                    <label for="nameEditInput">Nazwa Przepisu</label>
+                                    <input type="text" class="form-control" id="nameEditInput" th:value="${recipe.getName()}" th:attr="name='name'">
+                                </div>
+                                <div class="form-group">
+                                    <label for="componentEditTextarea">Składniki:</label>
+                                    <textarea class="form-control" id="componentEditTextarea" aria-describedby="componentEditHelp" rows="4" th:text="${#strings.setJoin(recipe.getComponents(), ', ')}" th:attr="name='components'"></textarea>
+                                    <small id="componentEditHelp" class="form-text text-muted">Pomiętaj aby składniki oddzielić przecinkiem!</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="prepareEditTextarea">Sposób przygotowania:</label>
+                                    <textarea class="form-control" id="prepareEditTextarea" rows="4" th:text="${recipe.getPrepare()}" th:attr="name='prepare'"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-success">Edytuj przepis</button>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Delete Modal -->
+            <div class="modal fade" th:id="${'usun' + recipe.getId()}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel1">Potwierdzenie</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <h6>Czy na pewno chcesz usunąć:</h6>
+                            <p th:text="${recipe.getName()}"></p>
+                        </div>
+                        <div class="modal-footer">
+                            <a th:href="@{/remove/{id}(id=${recipe.getId()})}"><button type="button" class="btn btn-danger">Usuń</button></a>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Zamknij</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </tbody>
+</table>
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>

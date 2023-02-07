@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html" lang="pl">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" th:href="@{../static/styles/style.css}" />
+
+    <title>Cook Book</title>
+</head>
+<body style="background-color: #212529">
+<h3 class="text-logo" style="color: white; text-align: center; margin-top: 150px;">Cook Book</h3>
+<div class="card" style="width: 400px; margin: auto; margin-top: 10px;">
+    <div class="card-body">
+        <form name="f" th:action="@{/login}" method="post">
+            <h5>Formularz Logowania:</h5>
+            <div class="form-group">
+                <label for="username">Nazwa Użytkownika</label>
+                <input class="form-control" type="text" id="username" name="username" placeholder="Nazwa użytkownika">
+            </div>
+            <div class="form-group">
+                <label for="password">Hasło</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Hasło">
+            </div>
+            <div th:if="${param.error}" class="alert alert-error">
+                Zła nazwa użytkownika lub hasło.
+            </div>
+            <div th:if="${param.logout}" class="alert alert-success">
+                Zostałeś wylogowany.
+            </div>
+            <button type="submit" class="btn btn-success">Zaloguj</button>
+        </form>
+    </div>
+</div>
+
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
